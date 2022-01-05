@@ -1,10 +1,14 @@
-const express =require("express");
-const app=express()
+const {readFileSync,writeFileSync} = require("fs")
 
-app.get("/url/:var/:urr",(req,res)=>{
-    res.send(req.params);
-})
+const newCount=()=>{
+    let count=readFileSync("./src/c.txt")
+    count=parseInt(count)
+    let newC=(count)+1
+    writeFileSync("./src/c.txt",newC.toString())
+    return count;
+}
 
-app.listen(3000,()=>{
-    console.log("Server running on 3000");
-})
+
+
+
+module.exports=newCount;

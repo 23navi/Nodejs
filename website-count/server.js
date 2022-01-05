@@ -20,14 +20,7 @@ const app=express()
 
 //Note: It will count everytime someone goes to any page, it will be more of website impression rather count
 
-app.use((req,res)=>{
-    let count=readFileSync("./count.txt")
-    count=parseInt(count)
-    const newCount=(count)+1
-    writeFileSync("./count.txt",newCount.toString())
-    res.send({visitCount:newCount})
-    console.log(newCount)
-})
+
 //there is some problem, it is incrementing 2 and not one
 
 app.listen(3000,()=>{
