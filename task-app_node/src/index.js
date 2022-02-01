@@ -16,82 +16,93 @@ app.get("/",(req,res)=>{
 
 
 //New User post route
-app.post("/users",(req,res)=>{
-    console.log(req.body)
+app.post("/users",async(req,res)=>{
     const newUser= new User(req.body);
+    try{
+        await newUser.save()
+        res.status(201).send(newUser)
 
-    newUser.save().then((user)=>{
-        res.send(user);
-    }).catch((e)=>{
-        res.send(e);
-    })
-    
+    }catch(e){
+        res.status(400).send()
+    }
 })
 
 
 // find all the users
 
-app.get("/users",(req,res)=>{
-    User.find({}).then(resolve=>{
-        res.status(200).send(resolve);
-    }).catch(e=>{
-        res.status(400).send(e);
-    })
+app.get("/users",async (req,res)=>{
+
+    try{
+        const users= await User.find({})
+        res.status(200).send(users)
+    }catch(e){
+        res.status(400).send()
+    }
+    
 })
 
 
 // find individual user
 
-app.get("/users/:id",(req,res)=>{
-    
-    User.findById(req.params.id).then(resolve=>{
-        if(!resolve){
+app.get("/users/:id",async(req,res)=>{
+
+    try{
+        const users= await User.findById(req.params.id);
+        if(!users){
             return res.status(400).send("No user found with this id");
         }
-        res.status(201).send(resolve);
-    }).catch(e=>{
-        res.status(500).send(e);
-    })
+        res.status(201).send(users);
+
+    }catch(e){
+        res.status(400).send()
+    }
+    
 })
 
 
 //New Task post route
 
-app.post("/tasks",(req,res)=>{
+app.post("/tasks",async(req,res)=>{
+
     const newTask= new Task(req.body);
-    newTask.save().then(()=>{
-        res.status(201);
-        res.send(newTask);
-    }).catch(e=>{
-        res.status(400);
-        res.send(e);
-    })
+
+    try{
+        await newTask.save()
+        res.status(201).send(newTask);
+    }catch(e){
+        res.status(400).send(e)
+    }
+
 })
 
 
 //get all the tasks
 
-app.get("/tasks",(req,res)=>{
-    Task.find({}).then(resolve=>{
-        res.status(200).send(resolve);
-    }).catch(e=>{
+app.get("/tasks",async(req,res)=>{
+
+    try{
+        const tasks= await Task.find({})
+        res.status(200).send(tasks);
+    }catch(e){
         res.status(400).send(e);
-    })
+    }
+    
 })
 
 // get individual task by id
 
-app.get("/tasks/:id",(req,res)=>{
-    Task.findById(req.params.id).then(resolve=>{
-        if(!resolve){
+app.get("/tasks/:id",async(req,res)=>{
+    try{
+        const tasks=await Task.findById(req.params.id)
+        if(!tasks){
             res.status(400).send("No task with this id");
 
         }else{
-            res.status(200).send(resolve);
+            res.status(200).send(tasks);
         }
-    }).catch(e=>{
+    }catch(e){
         res.status(500).send(e);
-    })
+    }
 })
 
 
