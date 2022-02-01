@@ -106,6 +106,55 @@ app.get("/tasks/:id",async(req,res)=>{
 })
 
 
+// update user detail by id
+
+app.patch("/users/:id",async(req,res)=>{
+    try{
+        
+        const user= await User.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true})
+    
+        if(!user){
+            return res.status(400).send("User not found")
+        }
+        res.status(200).send(user)
+
+    }catch(e){
+        res.status(500).send(e)
+    }
+})
+
+
+
+// update task detail by id
+
+app.patch("/tasks/:id",async(req,res)=>{
+    try{
+        const task= await Task.findByIdAndUpdate(req.params.id,req.body,{new : true, runValidators:true})
+        if(!task){
+            return res.status(400).send("Task not found")
+        }
+        res.status(200).send(task)
+
+    }catch(e){
+        res.status(500).send(e)
+    }
+})
+
+
+//delete a user by id
+
+app.delete("/users/:id",(req,res)=>{
+
+})
+
+
+
+//delete a task by id
+
+
+
+
+
 app.listen(PORT,()=>{
     console.log("App up and running on port ",PORT);
 })
