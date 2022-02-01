@@ -143,13 +143,41 @@ app.patch("/tasks/:id",async(req,res)=>{
 
 //delete a user by id
 
-app.delete("/users/:id",(req,res)=>{
+app.delete("/users/:id",async(req,res)=>{
+    try{
+        const user= await User.findByIdAndDelete(req.params.id)
+        if(!user){
+            return res.status(400).send("No user found")
+        }
+        res.status(200).send(user)
+    }catch(e){
 
+    }
 })
 
 
 
+
+
+
+
+
+
 //delete a task by id
+
+
+app.delete("/tasks/:id",async(req,res)=>{
+    try{
+        const task= await Task.findByIdAndDelete(req.params.id)
+        if (!task){
+            return res.status(400).send("Task not found")
+        }
+        res.status(200).send(task)
+    }catch(e){
+        res.status(500).send(e)
+    }
+})
+
 
 
 
