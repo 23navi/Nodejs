@@ -156,13 +156,6 @@ app.delete("/users/:id",async(req,res)=>{
 })
 
 
-
-
-
-
-
-
-
 //delete a task by id
 
 
@@ -177,9 +170,6 @@ app.delete("/tasks/:id",async(req,res)=>{
         res.status(500).send(e)
     }
 })
-
-
-
 
 
 

@@ -10,13 +10,18 @@ const geocode=(name,callback)=>{
             callback(response.body.message,undefined)
         }
         else{
+
             if(response.body.features[0]==undefined){
                 callback("No result found",undefined)
             }else{
+                
                 name=(response.body.features[0].place_name)
                 long=(response.body.features[0].geometry.coordinates[0])
                 lat=(response.body.features[0].geometry.coordinates[1])
                 callback(undefined,{long:long,lat:lat,name:name})
+                console.log(name)
+                console.log(long)
+                console.log(lat)
             }
         }
         
