@@ -22,10 +22,10 @@ MongoClient.connect(connectionURL,{useNewUrlParser:true,useUnifiedTopology: true
     })
 
 
-    // db.collection('tasks').updateMany({},{$set:{completed:true}},(error,result)=>{
-    //     console.log(result.modifiedCount);
-    //     console.log(result.matchCount)
-    // })
+    db.collection('tasks').updateMany({},{$set:{completed:true}},(error,result)=>{
+        console.log(result.modifiedCount);
+        console.log(result.matchCount)
+    })
 
 
 
@@ -40,22 +40,22 @@ MongoClient.connect(connectionURL,{useNewUrlParser:true,useUnifiedTopology: true
 
 
     
-    // db.collection('tasks').findOne({_id:ObjectID("61c5484731b4c629b132076f")},(error,result)=>{
-    //     if(!error){
-    //         console.log(result);
-    //         return
-    //     }
-    //     console.log(error)
+    db.collection('tasks').findOne({_id:ObjectID("61c5484731b4c629b132076f")},(error,result)=>{
+        if(!error){
+            console.log(result);
+            return
+        }
+        console.log(error)
 
-    // })
+    })
 
-    // db.collection("tasks").find({"completed":false}).toArray((error,result)=>{
-    //     if(error){
-    //         console.log(error);
-    //         return
-    //     }
-    //     console.log(result);
-    // })
+    db.collection("tasks").find({"completed":false}).toArray((error,result)=>{
+        if(error){
+            console.log(error);
+            return
+        }
+        console.log(result);
+    })
 
 
     

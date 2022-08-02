@@ -48,6 +48,47 @@ router.get("/users/:id",async(req,res)=>{
 })
 
 
+// update user detail by id
+
+router.patch("/users/:id",async(req,res)=>{
+  
+    const updates=Object.keys(req.body)
+    const allowedUpdates=["name","age","password","email"]; //so if someone does {id:4985r9yhf} it will not update as updating id is not a valid opeation 
+    const isValidOperation= updates.every((update)=> {
+        
+        return allowedUpdates.includes(update)}
+        )
+
+    if(!isValidOperation){
+        return res.status(400).send({error: 'Invalid Updates!'})
+    }
+
+    try{
+
+        const user=await User.findById(req.params.id)
+        if(!user){
+            return res.status(400).send("User not found")
+        }
+
+        //const user= await User.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true})
+        //findByIdAndUpdate() bypass mongoose middleware and we want mongoose to run .pre and hash password... so we will use more traditional way to update the user.
+        
+        //we get the user by the id provided by the user.
+        
+        updates.forEach(update=>{
+            user[update]=req.body[update];
+        })
+        await user.save();
+
+        res.status(200).send(user); 
+
+    }catch(e){
+        res.status(500).send(e)
+    }
+})
+
+
+
 
 //delete a user by id
 
