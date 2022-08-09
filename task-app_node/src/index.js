@@ -5,7 +5,6 @@ const Task=require("./models/task");
 
 const userRouter=require("./routers/user")
 const tastRouter=require("./routers/task")
-const { resolve } = require("mongodb/lib/core/topologies/read_preference");
 
 const PORT= process.env.PORT || 3000;
 

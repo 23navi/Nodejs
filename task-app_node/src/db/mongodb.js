@@ -1,10 +1,13 @@
 //curd operations
 
+//Not using this file in our task app
+
+
 const mongodb=require("mongodb")
 const MongoClient=mongodb.MongoClient
 
 const connectionURL='mongodb://127.0.0.1:27017';
-const databaseName='task-manager'
+const databaseName='task-manager-api'
 const ObjectID=mongodb.ObjectID;
 
 const newId=new ObjectID();

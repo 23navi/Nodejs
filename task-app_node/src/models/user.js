@@ -48,6 +48,7 @@ const userSchema= new mongoose.Schema({
 }
 )
 
+//This a document middleware of mongoose... one of 4 types of mongoose middleware
 
 userSchema.pre('save',async function(next){
     const user=this;
