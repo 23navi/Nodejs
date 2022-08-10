@@ -40,7 +40,7 @@ router.post("/users/login",async(req,res)=>{
 
 // find all the users
 
-router.get("/users",auth,async (req,res)=>{
+router.get("/users",auth,async(req,res)=>{
 
     try{
         const users= await User.find({})
@@ -67,6 +67,41 @@ router.get("/users/:id",auth,async(req,res)=>{
         res.status(400).send()
     }
     
+})
+
+
+//logging out from one device
+
+router.post("/users/logout",auth,async(req,res,next)=>{
+    try{
+        const user= req.user;
+        const newTok=user.tokens.filter(token=>{
+            return token.token!==req.token;
+        })
+        user.tokens=newTok;
+        await user.save();
+        res.send("logged out");
+
+    }catch(e){
+        res.status(500).send("Something went wrong");
+    }
+})
+
+
+
+// logging out of all devices
+
+router.post("/users/logoutAll",auth,async(req,res,next)=>{
+    try{
+        const user= req.user;
+        
+        user.tokens=[];
+        await user.save();
+        res.send("logged out from all devices");
+
+    }catch(e){
+        res.status(500).send("Something went wrong");
+    }
 })
 
 
