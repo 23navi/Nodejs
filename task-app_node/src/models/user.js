@@ -1,6 +1,8 @@
 const mongoose=require("mongoose");
 const validator=require("validator");
 const bcrypt=require("bcryptjs")
+const jwt=require("jsonwebtoken")
+
 
 
 const userSchema= new mongoose.Schema({
@@ -22,6 +24,7 @@ const userSchema= new mongoose.Schema({
     email:{
         type:String,
         required:true,
+        unique:true,
         lowercase:true,
         trim:true,
         validate(value){
@@ -43,10 +46,48 @@ const userSchema= new mongoose.Schema({
                 throw new Error("Password should not include 'pasword in it'");
             }
         }
-    }
+    },
+    tokens:[{
+        token:{
+            type: String,
+            required: true
+        }
+        
+      
+    }]
 
 }
 )
+
+
+//creating instance method
+userSchema.methods.genAuthToken=async function(){
+    const user=this;
+    const token= jwt.sign({id:user.id.toString()},"NaviSureka",{expiresIn:"1 day"})
+    user.tokens.push({token});
+    //user.tokens=user.tokens.concate({token})
+    await user.save();
+    
+    return token;
+}
+
+
+
+//creating model method
+userSchema.statics.findByCred= async function(email,rawPass){
+    const user= await User.findOne({email})
+    if(!user){ throw new Error("No user found")}
+
+    const isMatch = await bcrypt.compare(rawPass,user.password);
+    if(!isMatch){ throw new Error("Wrong password")}
+    return user;
+}
+
+
+
+
+
+
 
 //This a document middleware of mongoose... one of 4 types of mongoose middleware
 
@@ -60,11 +101,9 @@ userSchema.pre('save',async function(next){
 })
 
 
+
+
 const User=mongoose.model("User",userSchema);
-
-
-
-
 
 module.exports=User;
 
@@ -76,7 +115,7 @@ module.exports=User;
 //     age: 1,
 //     name:"Sureka Navi",
 //     email:"navisureka23@gmail.com",
-//     password:"NaPassword"
+//     password:"NaPas123"
 
 // })
 

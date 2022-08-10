@@ -1,24 +1,45 @@
 const express =require("express");
 const User= require("../models/user.js");
+const jwt=require("jsonwebtoken");
+const auth=require("../middleware/auth")
 
 const router=express.Router();
 
-//New User post route
+//New User post route (signup)
 router.post("/users",async(req,res)=>{
-    const newUser= new User(req.body);
+    
     try{
-        await newUser.save()
-        res.status(201).send(newUser)
+        const newUser= new User(req.body);
+        const token= await newUser.genAuthToken();
+        res.status(201).send({newUser,token})
 
     }catch(e){
         res.status(400).send()
     }
 })
 
+//login
+router.post("/users/login",async(req,res)=>{
+
+    try{
+        const user= await User.findByCred(req.body.email,req.body.password);
+        const token= await user.genAuthToken();
+    
+        if(!user){
+            res.send("Sorry no user found");
+        
+        }else{
+            res.send({user,token});
+        }
+    }catch(e){
+        res.send(e);
+    }
+    
+})
 
 // find all the users
 
-router.get("/users",async (req,res)=>{
+router.get("/users",auth,async (req,res)=>{
 
     try{
         const users= await User.find({})
