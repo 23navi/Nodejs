@@ -9,7 +9,8 @@ const router=express.Router();
 router.post("/users",async(req,res)=>{
     
     try{
-        const newUser= new User(req.body);
+        const newUser= await new User(req.body);
+        console.log(newUser);
         const token= await newUser.genAuthToken();
         res.status(201).send({newUser,token})
 
@@ -53,7 +54,7 @@ router.get("/users",auth,async (req,res)=>{
 
 // find individual user
 
-router.get("/users/:id",async(req,res)=>{
+router.get("/users/:id",auth,async(req,res)=>{
 
     try{
         const users= await User.findById(req.params.id);
@@ -71,7 +72,7 @@ router.get("/users/:id",async(req,res)=>{
 
 // update user detail by id
 
-router.patch("/users/:id",async(req,res)=>{
+router.patch("/users/:id",auth,async(req,res)=>{
   
     const updates=Object.keys(req.body)
     const allowedUpdates=["name","age","password","email"]; //so if someone does {id:4985r9yhf} it will not update as updating id is not a valid opeation 
@@ -113,7 +114,7 @@ router.patch("/users/:id",async(req,res)=>{
 
 //delete a user by id
 
-router.delete("/users/:id",async(req,res)=>{
+router.delete("/users/:id",auth,async(req,res)=>{
     try{
         const user= await User.findByIdAndDelete(req.params.id)
         if(!user){
