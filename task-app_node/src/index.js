@@ -30,3 +30,22 @@ app.listen(PORT,()=>{
     console.log("App up and running on port ",PORT);
 })
 
+
+
+
+
+
+
+// JSON.stringify(a) and a.toJSON() difference 
+
+// const a={
+//     b:"hello",
+//     c:334
+// }
+
+// a.toJSON = function(){
+//     console.log("Hellooooooo");
+//     return 1;
+// }
+
+// console.log(JSON.stringify(a));

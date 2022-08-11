@@ -100,6 +100,22 @@ userSchema.pre('save',async function(next){
     next();
 })
 
+//goal is to not show user the hashed password and the whole array of tokens
+//Method one which we are not using 
+
+// usesrSchema.methods.getUserDetails= function (){
+    
+// }
+
+
+// method two to acheive the same goal
+usesrSchema.methods.toJSON= function (){
+    const user=this;
+    const userObj=user.toObject();
+    delete userObj.password;
+    delete userObj.tokens;
+    return userObj;
+}
 
 
 
