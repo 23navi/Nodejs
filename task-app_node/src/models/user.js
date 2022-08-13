@@ -1,7 +1,8 @@
 const mongoose=require("mongoose");
 const validator=require("validator");
 const bcrypt=require("bcryptjs")
-const jwt=require("jsonwebtoken")
+const jwt=require("jsonwebtoken");
+const Task = require("./task");
 
 
 
@@ -56,8 +57,9 @@ const userSchema= new mongoose.Schema({
       
     }]
 
-}
-)
+},{
+    timestamps:true
+})
 
 
 //creating instance method
@@ -93,12 +95,16 @@ userSchema.statics.findByCred= async function(email,rawPass){
 
 userSchema.pre('save',async function(next){
     const user=this;
+    // note user.isModified check if the user's previous is same to new... no async 
     if(user.isModified("password")){
+        console.log(user.password) // before hashing... we can see the changed password if user changed it
         user.password=await bcrypt.hash(user.password,8)
         console.log(user.password);
     }
     next();
 })
+
+
 
 //goal is to not show user the hashed password and the whole array of tokens
 //Method one which we are not using 
@@ -109,7 +115,7 @@ userSchema.pre('save',async function(next){
 
 
 // method two to acheive the same goal
-usesrSchema.methods.toJSON= function (){
+userSchema.methods.toJSON= function (){
     const user=this;
     const userObj=user.toObject();
     delete userObj.password;
@@ -117,6 +123,29 @@ usesrSchema.methods.toJSON= function (){
     return userObj;
 }
 
+
+
+userSchema.virtual("allTasks",{
+    ref:"Task",
+    foreignField:"owner",
+    localField:"_id"
+})
+
+
+
+userSchema.post("findOneAndDelete", async function(user,next){
+
+    await user.populate("allTasks");
+
+
+    if(user.allTasks.length){
+        // await Task.deleteMany({_id:{$in: user.allTasks}});
+        await Task.deleteMany({owner:user._id})   // think this way... we don't even need to populate the user too..
+    }
+
+
+    next() // not req as we are using async await
+})
 
 
 const User=mongoose.model("User",userSchema);

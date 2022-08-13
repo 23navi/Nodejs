@@ -5,14 +5,15 @@ const auth=require("../middleware/auth")
 
 const router=express.Router();
 
+
+
 //New User post route (signup)
 router.post("/users",async(req,res)=>{
     
     try{
         const newUser= await new User(req.body);
-        console.log(newUser);
         const token= await newUser.genAuthToken();
-        res.status(201).send({newUser,token})
+        res.status(201).send({newUser,token})     //
 
     }catch(e){
         res.status(400).send()
@@ -38,13 +39,13 @@ router.post("/users/login",async(req,res)=>{
     
 })
 
-// find all the users
+// Give user data to the logged in user.
 
-router.get("/users",auth,async(req,res)=>{
+router.get("/users/me",auth,async(req,res)=>{
 
     try{
-        const users= await User.find({})
-        res.status(200).send(users)
+        //const users= await User.find({}) //The user data is attached to req in auth middleware
+        res.status(200).send(req.user)
     }catch(e){
         res.status(400).send()
     }
@@ -54,20 +55,23 @@ router.get("/users",auth,async(req,res)=>{
 
 // find individual user
 
-router.get("/users/:id",auth,async(req,res)=>{
 
-    try{
-        const users= await User.findById(req.params.id);
-        if(!users){
-            return res.status(400).send("No user found with this id");
-        }
-        res.status(201).send(users);
+//We don't want even an auth user to access all other users with id
 
-    }catch(e){
-        res.status(400).send()
-    }
+// router.get("/users/:id",auth,async(req,res)=>{
+
+//     try{
+//         const users= await User.findById(req.params.id);
+//         if(!users){
+//             return res.status(400).send("No user found with this id");
+//         }
+//         res.status(201).send(users);
+
+//     }catch(e){
+//         res.status(400).send()
+//     }
     
-})
+// })
 
 
 //logging out from one device
@@ -107,7 +111,7 @@ router.post("/users/logoutAll",auth,async(req,res,next)=>{
 
 // update user detail by id
 
-router.patch("/users/:id",auth,async(req,res)=>{
+router.patch("/users/me",auth,async(req,res)=>{
   
     const updates=Object.keys(req.body)
     const allowedUpdates=["name","age","password","email"]; //so if someone does {id:4985r9yhf} it will not update as updating id is not a valid opeation 
@@ -122,10 +126,12 @@ router.patch("/users/:id",auth,async(req,res)=>{
 
     try{
 
-        const user=await User.findById(req.params.id)
-        if(!user){
-            return res.status(400).send("User not found")
-        }
+        const user=req.user;
+        //we don't have to check if user is available bec it was done by auth and we have user data on req.user
+        // const user=await User.findById(req.params.id)
+        // if(!user){
+        //     return res.status(400).send("User not found")
+        // }
 
         //const user= await User.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true})
         //findByIdAndUpdate() bypass mongoose middleware and we want mongoose to run .pre and hash password... so we will use more traditional way to update the user.
@@ -149,15 +155,25 @@ router.patch("/users/:id",auth,async(req,res)=>{
 
 //delete a user by id
 
-router.delete("/users/:id",auth,async(req,res)=>{
+router.delete("/users/me",auth,async(req,res)=>{
     try{
-        const user= await User.findByIdAndDelete(req.params.id)
+
+        //await req.user.remove();   // note that the .remove is depricated 
+
+        // mongoose cascade on delete will be according to colt's video...
+
+
+        console.log("reached here")
+        const user= await User.findOneAndDelete({_id:req.user._id})
+        // we can also do deleteOne? what will be the middleware called??
+        
+        console.log("deleting usersss")
         if(!user){
             return res.status(400).send("No user found")
         }
-        res.status(200).send(user)
+        res.status(200).send({"Deleted User":req.user})
     }catch(e){
-
+        res.status(500).send("no user");
     }
 })
 
