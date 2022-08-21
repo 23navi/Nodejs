@@ -3,6 +3,9 @@ const User= require("../models/user.js");
 const jwt=require("jsonwebtoken");
 const auth=require("../middleware/auth")
 const multer= require("multer");
+const sharp=require("sharp");
+const {welcomeEmail,deleteEmail} = require("../email/acc");
+
 
 const router=express.Router();
 
@@ -27,7 +30,8 @@ router.post("/users",async(req,res)=>{
     try{
         const newUser= await new User(req.body);
         const token= await newUser.genAuthToken();
-        res.status(201).send({newUser,token})     //
+        welcomeEmail(newUser.username,newUser.email);
+        res.status(201).send({newUser,token})   
 
     }catch(e){
         res.status(400).send()
@@ -176,15 +180,13 @@ router.delete("/users/me",auth,async(req,res)=>{
 
         // mongoose cascade on delete will be according to colt's video...
 
-
-        console.log("reached here")
         const user= await User.findOneAndDelete({_id:req.user._id})
         // we can also do deleteOne? what will be the middleware called??
         
-        console.log("deleting usersss")
         if(!user){
             return res.status(400).send("No user found")
         }
+        deleteEmail(req.user.username,req.user.email);
         res.status(200).send({"Deleted User":req.user})
     }catch(e){
         res.status(500).send("no user");
@@ -196,7 +198,8 @@ router.delete("/users/me",auth,async(req,res)=>{
 
 // upload user avatar (dp) and we can also use this route to change the dp
 router.post("/users/me/avatar",auth, userAvatar.single("avatar"),async(req,res)=>{
-    req.user.avatar=req.file.buffer;
+    const buffer= await sharp(req.file.buffer).resize({width:100,height:500}).toBuffer();
+    req.user.avatar=buffer;
     await req.user.save();
     res.send("okk");
 })
@@ -211,6 +214,15 @@ router.delete("/users/me/avatar",auth,async(req,res)=>{
 
 
 
+router.get("/users/:id/avatar",async(req,res)=>{
+    const user= await User.findById(req.params.id);
+    
+    if(!user || !user.avatar){
+        return res.send("error");
+    }
+    res.set("Content-Type","image/jpg")
+    res.send(user.avatar);
+})
 
 
 module.exports=router;

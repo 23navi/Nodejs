@@ -6,9 +6,7 @@ const multer=require("multer");
 const userRouter=require("./routers/user")
 const tastRouter=require("./routers/task")
 
-const PORT= process.env.PORT || 3000;
-
-
+const PORT= process.env.PORT;
 
 
 const app=express();
@@ -87,10 +85,10 @@ const Task=require("./models/task");
 
 // Test for multer
 
-const iUpload = multer({
-    dest:"img",
-})
+// const iUpload = multer({
+//     dest:"img",
+// })
 
-app.post("/upload",iUpload.single("img"),(req,res,next)=>{
-    res.send("ok done");
-})
+// app.post("/upload",iUpload.single("img"),(req,res,next)=>{
+//     res.send("ok done");
+// })

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "env-cmd -f ./config/dev.env node src/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +21,6 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "env-cmd": "^10.1.0"
   }
 }
