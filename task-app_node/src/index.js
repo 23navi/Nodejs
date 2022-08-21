@@ -1,5 +1,6 @@
 const express=require("express");
 require("./db/mongoose");
+const multer=require("multer");
 
 
 const userRouter=require("./routers/user")
@@ -77,3 +78,19 @@ const Task=require("./models/task");
 // }
 
 // main()
+
+
+
+
+
+
+
+// Test for multer
+
+const iUpload = multer({
+    dest:"img",
+})
+
+app.post("/upload",iUpload.single("img"),(req,res,next)=>{
+    res.send("ok done");
+})

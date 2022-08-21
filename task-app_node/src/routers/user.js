@@ -2,8 +2,22 @@ const express =require("express");
 const User= require("../models/user.js");
 const jwt=require("jsonwebtoken");
 const auth=require("../middleware/auth")
+const multer= require("multer");
 
 const router=express.Router();
+
+
+const userAvatar = multer({
+    limits:{
+        fileSize:1000000,
+    },
+    fileFilter(req,file,callB){
+        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
+            callB(new Error("Only JPEG, JPG or PNG form"));
+        }
+        callB(undefined,true);
+    }
+})
 
 
 
@@ -176,6 +190,26 @@ router.delete("/users/me",auth,async(req,res)=>{
         res.status(500).send("no user");
     }
 })
+
+
+
+
+// upload user avatar (dp) and we can also use this route to change the dp
+router.post("/users/me/avatar",auth, userAvatar.single("avatar"),async(req,res)=>{
+    req.user.avatar=req.file.buffer;
+    await req.user.save();
+    res.send("okk");
+})
+
+//delete usesr avatar(dp)
+router.delete("/users/me/avatar",auth,async(req,res)=>{
+    req.user.avatar=undefined, 
+    await req.user.save()
+    res.send("okkk");
+})
+
+
+
 
 
 
