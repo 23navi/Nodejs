@@ -24,7 +24,7 @@ console.log(process.env.PORT);
 app.get("/search",async(req,res)=>{
     try{
         const result= await axios.get(`${URLString}${req.query.q}`);
-        // console.log(result);
+        console.log(result.data.items[0]);
         res.send(result.data.items.map((item)=> item.snippet.title));
     }catch(err){
         console.log(err);
