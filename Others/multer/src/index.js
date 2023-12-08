@@ -16,6 +16,8 @@ app.use("/upload", multiFile_multiField);
 app.use("/upload", multiFile_withLimit);
 app.use("/upload", file_with_type);
 
+app.use("/s3upload");
+
 app.listen(3000, () => {
   console.log("server is running on port 3000");
 });
